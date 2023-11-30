@@ -69,12 +69,13 @@ public class Main extends JFrame {
         pedidos.add(new Pedido(alice, boloMorango, ruaDosMusicos));
         
         setTitle("Confeitaria App");
-        setSize(800, 600);
+        setSize(1280, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         tableModel = new DefaultTableModel(new String[]{"Cliente", "Data", "Bolo", "Endereço", "Telefone", "Status"}, 0);
         JTable pedidosTable = new JTable(tableModel);
+        pedidosTable.setRowHeight(48);
         JScrollPane scrollPane = new JScrollPane(pedidosTable);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -88,7 +89,7 @@ public class Main extends JFrame {
         JMenuItem consultarPedidoItem = new JMenuItem("Consultar Pedido");
 
         consultarPedidoItem.addActionListener(e -> {
-        	consultarPedido();
+        	consultarPedido(-1);
         	atualizarPedidosTabela(pedidos);        	
         });
         novoPedidoItem.addActionListener(e -> novoPedido(null, null, null));
@@ -139,6 +140,13 @@ public class Main extends JFrame {
 
         bolosMenu.add(consultarBoloItem);
         bolosMenu.add(novoBoloItem);
+        
+        JButton consultar = new JButton("Consultar");
+        this.add(consultar, BorderLayout.PAGE_END);
+        
+        consultar.addActionListener(e -> {
+        	consultarPedido(pedidosTable.getSelectedRow() + 1);
+        });
 
         atualizarPedidosTabela(pedidos);
 
@@ -152,7 +160,8 @@ public class Main extends JFrame {
                     pedido.getCliente().getNome(),
                     pedido.getData(),
                     pedido.getBolo().getDescricao(),
-                    pedido.getEndereco().getRua() + ", " + pedido.getEndereco().getCidade() + ", " + pedido.getEndereco().getEstado(),
+                    pedido.getEndereco().getRua() + ", " 
+                    + pedido.getEndereco().getCidade() + ", " + pedido.getEndereco().getEstado(),
                     pedido.getCliente().getTelefone(),
                     pedido.getStatus()
             };
@@ -160,11 +169,15 @@ public class Main extends JFrame {
         });
 	}
 
-	private void consultarPedido() {
-        String numeroPedido = JOptionPane.showInputDialog(this, "Digite o número do pedido:");
+	private void consultarPedido(int n) {
+		if(n == -1) {
+			String numeroPedido = JOptionPane.showInputDialog(this, "Digite o número do pedido:");
+			n = Integer.parseInt(numeroPedido);
+		}
 
         try {
-            int numero = Integer.parseInt(numeroPedido);
+        	
+        	int numero = n;
 
             Optional<Pedido> pedidoConsultado = pedidos.stream()
                     .filter(pedido -> pedido.getNumero() == numero)
@@ -274,7 +287,6 @@ public class Main extends JFrame {
 
 	private void consultarCliente() {
 	    String nomeCliente = JOptionPane.showInputDialog(this, "Digite o nome do cliente:");
-
 	    Optional<Cliente> clienteConsultado = clientes.stream()
 	            .filter(cliente -> cliente.getNome().equalsIgnoreCase(nomeCliente))
 	            .findFirst();
@@ -353,7 +365,8 @@ public class Main extends JFrame {
 
     private void listarClientes() {
         SwingUtilities.invokeLater(() -> {
-            DefaultTableModel clientesTableModel = new DefaultTableModel(new String[]{"Nome", "Telefone"}, 0);
+            DefaultTableModel clientesTableModel;
+            clientesTableModel = new DefaultTableModel(new String[]{"Nome", "Telefone"}, 0);
 
             clientes.forEach(cliente -> {
                 Object[] rowData = {
@@ -364,6 +377,7 @@ public class Main extends JFrame {
             });
 
             JTable clientesTable = new JTable(clientesTableModel);
+            clientesTable.setRowHeight(64);
             JFrame frame = new JFrame("Lista de Clientes");
             frame.add(new JScrollPane(clientesTable));
             frame.pack();
@@ -385,6 +399,7 @@ public class Main extends JFrame {
             });
 
             JTable bolosTable = new JTable(bolosTableModel);
+            bolosTable.setRowHeight(64);
             JFrame frame = new JFrame("Lista de Bolos");
             frame.add(new JScrollPane(bolosTable));
             frame.pack();
