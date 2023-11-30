@@ -8,6 +8,11 @@ public class Cliente {
         this.nome = nome;
         this.telefone = telefone;
     }
+    
+    @Override
+    public String toString() {
+    	return this.nome + ", " + this.telefone;
+    }
 
 	public String getNome() {
 		return nome;
